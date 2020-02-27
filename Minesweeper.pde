@@ -3,10 +3,10 @@ public final static int NUM_COLS = 5;
 public final static int NUM_ROWS = 5;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> mines = new ArrayList <MSButton>(); //ArrayList of just the minesweeper buttons that are mined
-private int NUM_MINES = 3;
+private int NUM_MINES = 1;//(NUM_COLS * NUM_ROWS)/5;
 void setup ()
 {
-    size(400, 400);
+    size(400, 500);
     textAlign(CENTER,CENTER);
     
     // make the manager
@@ -26,11 +26,12 @@ public void setMines()
     for(int i = 0; i < NUM_MINES; i++){
         int ranRow = (int)(Math.random() * NUM_ROWS);
         int ranCol = (int)(Math.random() * NUM_COLS);
-        if(!mines.contains(new MSButton(ranRow, ranCol))){
-            mines.add(new MSButton(ranRow, ranCol));
-            System.out.println("Mine at: " + ranRow + ", " + ranCol);
+        if(!mines.contains(buttons[ranRow][ranCol])){
+            mines.add(buttons[ranRow][ranCol]);
+            System.out.println("Mines at: " + ranRow + ", " + ranCol);
         }
     }
+
 }
 
 public void draw ()
@@ -41,16 +42,40 @@ public void draw ()
 }
 public boolean isWon()
 {
-    //your code here
+    int numFlaggedMines = 0;
+    for(int i = 0; i < mines.size(); i++){
+        if(mines.get(i).isFlagged()){
+            numFlaggedMines++;
+        }
+    }
+    if(numFlaggedMines == mines.size())
+        return true;
     return false;
 }
 public void displayLosingMessage()
 {
     System.out.println("boom");
+    background(230);
+    fill(255);
+    textSize(50);
+    text("You Lose!",width/2, 450);
+    noLoop();
+    
+    for(int r = 0; r < NUM_ROWS; r++)
+        for(int c = 0; c < buttons[r].length; c++)
+            buttons[r][c].clicked = true; 
 }
 public void displayWinningMessage()
 {
-    //your code here
+    System.out.println("You win!");
+    fill(255);
+    textSize(50);
+    text("You Win!",width/2, height/2);
+    noLoop();
+
+    for(int r = 0; r < NUM_ROWS; r++)
+        for(int c = 0; c < buttons[r].length; c++)
+            buttons[r][c].clicked = true; 
 }
 public boolean isValid(int r, int c)
 {
@@ -64,7 +89,7 @@ public int countMines(int row, int col)
     for(int r = row -1; r <= row+1; r++){
         for(int c = col - 1; c <= col+1; c++){
             if(isValid(r, c)){
-                if(mines.contains(new MSButton(r, c))){
+                if(mines.contains(buttons[r][c])){ 
                     numMines++;
                 }
             }
@@ -95,24 +120,37 @@ public class MSButton
     // called by manager
     public void mousePressed () 
     {
-        if(mouseButton == LEFT) {
-            System.out.println("Clicked: "+ myRow + ", " + myCol);
-            clicked = true;
-        }
-        else if(mouseButton == RIGHT){   
+        System.out.println("Clicked: "+ myRow + ", " + myCol);
+        clicked = true;
+        if(mouseButton == RIGHT){   
             flagged = !flagged;
+            System.out.println("Flagged: "+ myRow + ", " + myCol);
+            if(mines.contains(this)){
+                System.out.println("Mine flagged");
+            }
             if(flagged)
                 clicked = false;
         }
 
-        else if(mines.contains(new MSButton(myRow, myCol))){
+        else if(mines.contains(buttons[myRow][myCol])){
             displayLosingMessage();
         } 
         else if(countMines(myRow, myCol) > 0){
             setLabel(countMines(myRow, myCol));
         }
         else {
-            // recursively call mousePressed with the valid, unclicked, neighboring buttons in all 8 directions
+            if(isValid(myRow, myCol-1) && !buttons[myRow][myCol-1].clicked)
+               buttons[myRow][myCol-1].mousePressed();
+
+            if(isValid(myRow, myCol+1) && !buttons[myRow][myCol+1].clicked)
+               buttons[myRow][myCol+1].mousePressed();
+
+            if(isValid(myRow+1, myCol) && !buttons[myRow+1][myCol].clicked)
+               buttons[myRow+1][myCol].mousePressed();
+
+            if(isValid(myRow-1, myCol) && !buttons[myRow-1][myCol].clicked)
+               buttons[myRow-1][myCol].mousePressed();
+
         }
         
     }
@@ -120,8 +158,9 @@ public class MSButton
     {    
         if (flagged)
             fill(0);
-         else if( clicked && mines.contains(this) ) 
+         else if( clicked && mines.contains(this) ) {
              fill(255,0,0);
+         }
         else if(clicked)
             fill( 200 );
         else 
@@ -129,6 +168,7 @@ public class MSButton
 
         rect(x, y, width, height);
         fill(0);
+        textSize(400/NUM_ROWS);
         text(myLabel,x+width/2,y+height/2);
     }
     public void setLabel(String newLabel)
