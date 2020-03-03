@@ -36,7 +36,7 @@ public void setMines()
 
 public void draw ()
 {
-    background( 0 );
+
     if(isWon() == true)
         displayWinningMessage();
 }
@@ -55,7 +55,7 @@ public boolean isWon()
 public void displayLosingMessage()
 {
     
-    fill(255);
+    fill(50);
     textSize(40);
     text("You Lose!",width/2, 450);
     
@@ -63,12 +63,11 @@ public void displayLosingMessage()
     for(int r = 0; r < NUM_ROWS; r++)
         for(int c = 0; c < buttons[r].length; c++)
             buttons[r][c].clicked = true;
-    noLoop(); 
 }
 public void displayWinningMessage()
 {
     
-    fill(255);
+    fill(50);
     textSize(40);
     text("You Win!",width/2, 450);
     
@@ -76,7 +75,6 @@ public void displayWinningMessage()
     for(int r = 0; r < NUM_ROWS; r++)
         for(int c = 0; c < buttons[r].length; c++)
             buttons[r][c].clicked = true; 
-    noLoop();
 }
 public boolean isValid(int r, int c)
 {
