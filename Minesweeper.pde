@@ -58,11 +58,12 @@ public void displayLosingMessage()
     fill(255);
     textSize(40);
     text("You Lose!",width/2, 450);
-    noLoop();
+    
     
     for(int r = 0; r < NUM_ROWS; r++)
         for(int c = 0; c < buttons[r].length; c++)
-            buttons[r][c].clicked = true; 
+            buttons[r][c].clicked = true;
+    noLoop(); 
 }
 public void displayWinningMessage()
 {
@@ -70,11 +71,12 @@ public void displayWinningMessage()
     fill(255);
     textSize(40);
     text("You Win!",width/2, 450);
-    noLoop();
+    
 
     for(int r = 0; r < NUM_ROWS; r++)
         for(int c = 0; c < buttons[r].length; c++)
             buttons[r][c].clicked = true; 
+    noLoop();
 }
 public boolean isValid(int r, int c)
 {
